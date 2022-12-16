@@ -23,8 +23,13 @@ int main()
     vector<double> directHits;
     vector<double> fifoFullyHits;
     vector<double> lruFullyHits;
-    vector<tuple<int, int, int>> sA;
-    vector<double> sAHits;
+    vector<double> fifoSetTwoHits;
+    vector<double> lruSetTwoHits;
+    vector<double> testing;
+    vector<double> fifoSetFourHits;
+    vector<double> fifoSetEightHits;
+    vector<double> lruSetFourHits;
+    vector<double> lruSetEightHits;
     vector<string>addressStore;
     
     for (int a = 0; a < values.size(); a++) {
@@ -33,7 +38,7 @@ int main()
         double lines, offsetWidth, lineWidth;
         string hexAddress, temp;
         string binAddress = "";
-        int dHit = 0, fHitFIFO = 0, fHitLRU = 0 , sTwoHit = 0, sFourHit = 0, sEightHit = 0;
+        int dHit = 0, fHitFIFO = 0, fHitLRU = 0, sTwoHitFIFO = 0, fifoSFourHit = 0, fifoSEightHit = 0, sTwoHitLRU = 0, lruSFourHit = 0, lruSEightHit = 0, testingNum = 0;
 
         //Calculation
         double blockSize = 64;
@@ -42,11 +47,16 @@ int main()
 
         //Vectors storing cache
         vector<tuple <int, int, int>> directMap(numCacheLines);
-        /*vector<tuple <int, int, int>> sATwo(numCacheLines);
-        vector<tuple <int, int, int>> sAFour(numCacheLines);
-        vector<tuple <int, int, int>> sAEight(numCacheLines);*/
+        vector<tuple <int, int, int>> sATwoFIFO(numCacheLines);
+        vector<tuple <int, int, int>> setFourFIFO(numCacheLines);
+        vector<tuple <int, int, int>> setEightFIFO(numCacheLines);
+        vector<tuple <int, int, int>> sATwoLRU(numCacheLines);
+        vector<tuple <int, int, int>> setFourLRU(numCacheLines);
+        vector<tuple <int, int, int>> setEightLRU(numCacheLines);
         vector<tuple <int, int, int>> fullyAssociativeFIFO(numCacheLines);
         vector<tuple <int, int, int>> fullyAssociativeLRU(numCacheLines);
+        vector<tuple <int, int, int>> testingCache(numCacheLines);
+
 
         //Set values for direct map
         int dSize = directMap.size();
@@ -56,7 +66,7 @@ int main()
             get<2>(directMap[i]) = 0;
         }
 
-        //Set values for fully associative
+        //Set values for fully associative FIFO
         int fSize = fullyAssociativeFIFO.size();
         for (int i = 0; i < fSize; i++) {
             get<0>(fullyAssociativeFIFO[i]) = 0;
@@ -64,6 +74,7 @@ int main()
             get<2>(fullyAssociativeFIFO[i]) = 0;
         }
 
+        //Set values for fully associative LRU
         fSize = fullyAssociativeLRU.size();
         for (int i = 0; i < fSize; i++) {
             get<0>(fullyAssociativeLRU[i]) = 0;
@@ -71,14 +82,127 @@ int main()
             get<2>(fullyAssociativeLRU[i]) = 0;
         }
 
-        
+        //Set values for set associative FIFO 2 way
+        int sSize = sATwoFIFO.size();
+        int counter = 0;
+        for (int i = 0; i < sSize; i+=2) {
+            
+            get<0>(sATwoFIFO[i]) = counter;
+            get<0>(sATwoFIFO[i + 1]) = counter;
+            get<1>(sATwoFIFO[i]) = -1;
+            get<1>(sATwoFIFO[i + 1]) = -1;
+            //get<2>(sATwoFIFO[i]) = 0;
+            //get<2>(sATwoFIFO[i]) = 0;
 
-        ////Set values for set associative 
-        //int sSize = setAssociative.size();
-        //for (int i = 0; i < sSize; i+=2) {
-        //    get<0>(setAssociative[i]) = i;
-        //    get<0>(setAssociative[i + 1]) = i;
-        //}
+            counter++;
+        }
+        //Set values for set associative LRU 2 way
+        sSize = testingCache.size();
+        counter = 0;
+        for (int i = 0; i < sSize; i += 2) {
+
+            get<0>(testingCache[i]) = counter;
+            get<0>(testingCache[i + 1]) = counter;
+            get<1>(testingCache[i]) = -1;
+            get<1>(testingCache[i + 1]) = -1;
+            //get<2>(sATwoLRU[i]) = 0;
+            //get<2>(sATwoLRU[i]) = 0;
+
+            counter++;
+        }
+
+        sSize = setFourFIFO.size();
+        counter = 0;
+        for (int i = 0; i < sSize; i += 4) {
+
+            get<0>(setFourFIFO[i]) = counter;
+            get<0>(setFourFIFO[i + 1]) = counter;
+            get<0>(setFourFIFO[i + 2]) = counter;
+            get<0>(setFourFIFO[i + 3]) = counter;
+            get<1>(setFourFIFO[i]) = -1;
+            get<1>(setFourFIFO[i + 1]) = -1;
+            get<1>(setFourFIFO[i + 2]) = -1;
+            get<1>(setFourFIFO[i + 3]) = -1;
+            //get<2>(sATwoLRU[i]) = 0;
+            //get<2>(sATwoLRU[i]) = 0;
+
+            counter++;
+        }
+
+        sSize = setFourLRU.size();
+        counter = 0;
+        for (int i = 0; i < sSize; i += 4) {
+
+            get<0>(setFourLRU[i]) = counter;
+            get<0>(setFourLRU[i + 1]) = counter;
+            get<0>(setFourLRU[i + 2]) = counter;
+            get<0>(setFourLRU[i + 3]) = counter;
+            get<1>(setFourLRU[i]) = -1;
+            get<1>(setFourLRU[i + 1]) = -1;
+            get<1>(setFourLRU[i + 2]) = -1;
+            get<1>(setFourLRU[i + 3]) = -1;
+            //get<2>(sATwoLRU[i]) = 0;
+            //get<2>(sATwoLRU[i]) = 0;
+
+            counter++;
+        }
+
+        sSize = setEightFIFO.size();
+        counter = 0;
+        for (int i = 0; i < sSize; i += 8) {
+
+            get<0>(setEightFIFO[i]) = counter;
+            get<0>(setEightFIFO[i + 1]) = counter;
+            get<0>(setEightFIFO[i + 2]) = counter;
+            get<0>(setEightFIFO[i + 3]) = counter;
+            get<0>(setEightFIFO[i + 4]) = counter;
+            get<0>(setEightFIFO[i + 5]) = counter;
+            get<0>(setEightFIFO[i + 6]) = counter;
+            get<0>(setEightFIFO[i + 7]) = counter;
+            get<1>(setEightFIFO[i]) = -1;
+            get<1>(setEightFIFO[i + 1]) = -1;
+            get<1>(setEightFIFO[i + 2]) = -1;
+            get<1>(setEightFIFO[i + 3]) = -1;
+            get<1>(setEightFIFO[i + 4]) = -1;
+            get<1>(setEightFIFO[i + 5]) = -1;
+            get<1>(setEightFIFO[i + 6]) = -1;
+            get<1>(setEightFIFO[i + 7]) = -1;
+
+            //get<2>(sATwoLRU[i]) = 0;
+            //get<2>(sATwoLRU[i]) = 0;
+
+            counter++;
+        }
+
+        sSize = setEightLRU.size();
+        counter = 0;
+        for (int i = 0; i < sSize; i += 8) {
+
+            get<0>(setEightLRU[i]) = counter;
+            get<0>(setEightLRU[i + 1]) = counter;
+            get<0>(setEightLRU[i + 2]) = counter;
+            get<0>(setEightLRU[i + 3]) = counter;
+            get<0>(setEightLRU[i + 4]) = counter;
+            get<0>(setEightLRU[i + 5]) = counter;
+            get<0>(setEightLRU[i + 6]) = counter;
+            get<0>(setEightLRU[i + 7]) = counter;
+            get<1>(setEightLRU[i]) = -1;
+            get<1>(setEightLRU[i + 1]) = -1;
+            get<1>(setEightLRU[i + 2]) = -1;
+            get<1>(setEightLRU[i + 3]) = -1;
+            get<1>(setEightLRU[i + 4]) = -1;
+            get<1>(setEightLRU[i + 5]) = -1;
+            get<1>(setEightLRU[i + 6]) = -1;
+            get<1>(setEightLRU[i + 7]) = -1;
+            //get<2>(sATwoLRU[i]) = 0;
+            //get<2>(sATwoLRU[i]) = 0;
+
+            counter++;
+        }
+        /*for (int i = 0; i < sSize; i++) {
+            cout << get<0>(sATwoFIFO[i]) << " " << get<1>(sATwoFIFO[i]) << " " << get<2>(sATwoFIFO[i]) << endl;
+        }*/
+
 
         //Open file
         fstream trace;
@@ -249,334 +373,516 @@ int main()
 
 //LRU Fully Associative End
 
-//Set Associative Start
-    //    int bytesPerLine = numCacheLines / 2;
-    //    offsetWidth = log2(bytesPerLine);
-    //    int setWidth = log2(bytesPerLine); 
+//FIFO Set Associative Start
+
+      //Two
+        int bytesPerLine = numCacheLines / 2;
+        offsetWidth = log2(blockSize);
+        int setWidth = log2(bytesPerLine); 
+        //cout << setWidth;
+
+        for (int b = 0; b < addressStore.size(); b++) {
+
+            string setValue = addressStore[b].substr(addressStore[b].size() - (offsetWidth + setWidth), setWidth);
+            string offsetValue = addressStore[b].substr(addressStore[b].size() - offsetWidth);
+            double tag = binary_to_decimal(addressStore[b].substr(0, addressStore[b].size() - (offsetWidth + setWidth)));
+
+            //cout << tag << setValue << offsetValue << endl;
+            double setValueNew = (binary_to_decimal(setValue));
+
+            int temporary = 0;
+            int full = 1;
+
+            for (int i = 0; i < sATwoFIFO.size(); i++) {
+                if (get<0>(sATwoFIFO[i]) == setValueNew) {
+                    if (get<1>(sATwoFIFO[i]) == tag) {
+                        sTwoHitFIFO++;
+                        temporary = 1;
+                        full = 0;
+                        break;
+                    }
+                }
+            }
+
+
+            if (temporary == 0) {
+
+                for (int i = 0; i < sATwoFIFO.size(); i++) {
+                    if (get<0>(sATwoFIFO[i]) == setValueNew) {
+                        if (get<1>(sATwoFIFO[i]) == -1) {
+                            get<1>(sATwoFIFO[i]) = tag;
+                            get<2>(sATwoFIFO[i]) = b;
+                            full = 0;
+                            break;
+                        }
+                    }
+                }
+            }
 
-    //    
 
-    //    int sSize = sA.size();
-    //    for (int i = 0; i < sSize; i+=2) {
-    //        get<0>(sA[i]) = i;
-    //        get<0>(sA[i + 1]) = i;
-    //        get<1>(sA[i]) = -1;
-    //        get<1>(sA[i+1]) = -1;
-    //        get<2>(sA[i]) = 0;
-    //        get<2>(sA[i + 1]) = 0;
-    //    }
 
-    //    int sAHitNEW = 0;
+            if (full == 1) {
+                //cout << "hello";
+                int minimum = get<2>(sATwoFIFO[0]);
+                int track = 0;
+                for (int i = 0; i < sATwoFIFO.size(); i++) {
+                    if (get<0>(sATwoFIFO[i]) == setValueNew) {
+                        if (get<2>(sATwoFIFO[i]) < minimum) {
+                            minimum = get<2>(sATwoFIFO[i]);
+                            track = i;
+                        }
+                    }
 
-    //    for (int b = 0; b < addressStore.size(); b++) {
+                }
 
-    //        string setValue = addressStore[b].substr(addressStore[b].size() - (offsetWidth + setWidth), setWidth);
-    //        string offsetValue = addressStore[b].substr(addressStore[b].size() - offsetWidth);
-    //        double tag = binary_to_decimal(addressStore[b].substr(0, addressStore[b].size() - (offsetWidth + setWidth)));
+                get<1>(sATwoFIFO[track]) = tag;
+                get<2>(sATwoFIFO[track]) = b;
 
-    //        double setValueNew = (binary_to_decimal(setValue));
-
-    //        //cout << setValueNew << endl;
-    //        int temporary = 0;
-    //        int full = 1;
+            }
+            
 
-    //        for (int i = 0; i < sA.size(); i++) {
-    //            if (get<0>(sA[i]) == setValueNew) {
-    //                if (get<1>(sA[i]) == tag) {
-    //                    sAHitNEW++;
-    //                    temporary = 1;
-    //                    full = 0;
-    //                    break;
-    //                }
-    //            }
-    //        }
-
-
-    //        if (temporary == 0) {
 
+        }
+        result = static_cast<double>(sTwoHitFIFO) / addressStore.size();
+        fifoSetTwoHits.push_back(result);
+
+      //Four
+        bytesPerLine = numCacheLines / 4;
+        offsetWidth = log2(blockSize);
+        setWidth = log2(bytesPerLine);
+        //cout << setWidth;
 
-    //            //for (int i = 0; i < sA.size(); i++) {
-    //                /*if (get<0>(sA[i]) == setValueNew) {
-    //                    if (get<1>(fullyAssociativeFIFO[i]) == -1) {
-    //                        get<1>(fullyAssociativeFIFO[i]) = tag;
-    //                        get<2>(fullyAssociativeFIFO[i]) = b;
-    //                        full = 0;
-    //                        break;
-    //                    }
-    //                }*/
-    //            //}
-    //        }
-
-
+        for (int b = 0; b < addressStore.size(); b++) {
 
-    //        if (full == 1) {
-    //            //cout << "hello";
-    //            int minimum = INT_MAX;
-    //            int track = 0;
-    //            //for (int i = 0; i < sA.size(); i++) {
-    //                /*if (get<0>(sA[i]) == setValueNew) {
-    //                    if (get<2>(sA[i]) < minimum) {
-    //                        minimum = get<2>(sA[i]);
-    //                        track = i;
-    //                    }
-    //                }*/
+            string setValue = addressStore[b].substr(addressStore[b].size() - (offsetWidth + setWidth), setWidth);
+            string offsetValue = addressStore[b].substr(addressStore[b].size() - offsetWidth);
+            double tag = binary_to_decimal(addressStore[b].substr(0, addressStore[b].size() - (offsetWidth + setWidth)));
+
+            //cout << tag << setValue << offsetValue << endl;
+            double setValueNew = (binary_to_decimal(setValue));
+
+            int temporary = 0;
+            int full = 1;
+
+            for (int i = 0; i < setFourFIFO.size(); i++) {
+                if (get<0>(setFourFIFO[i]) == setValueNew) {
+                    if (get<1>(setFourFIFO[i]) == tag) {
+                        fifoSFourHit++;
+                        temporary = 1;
+                        full = 0;
+                        break;
+                    }
+                }
+            }
+
+
+            if (temporary == 0) {
 
-    //            //}
+                for (int i = 0; i < setFourFIFO.size(); i++) {
+                    if (get<0>(setFourFIFO[i]) == setValueNew) {
+                        if (get<1>(setFourFIFO[i]) == -1) {
+                            get<1>(setFourFIFO[i]) = tag;
+                            get<2>(setFourFIFO[i]) = b;
+                            full = 0;
+                            break;
+                        }
+                    }
+                }
+            }
 
-    //            get<1>(sA[track]) = tag;
-    //            get<2>(sA[track]) = b;
 
-    //        }
-    //        
 
-    //    }
+            if (full == 1) {
+                //cout << "hello";
+                int minimum = get<2>(setFourFIFO[0]);
+                int track = 0;
+                for (int i = 0; i < setFourFIFO.size(); i++) {
+                    if (get<0>(setFourFIFO[i]) == setValueNew) {
+                        if (get<2>(setFourFIFO[i]) < minimum) {
+                            minimum = get<2>(setFourFIFO[i]);
+                            track = i;
+                        }
+                    }
 
-    //    result = static_cast<double>(sAHitNEW) / addressStore.size();
-    //    sAHits.push_back(result);
+                }
 
+                get<1>(setFourFIFO[track]) = tag;
+                get<2>(setFourFIFO[track]) = b;
 
-    //    bytesPerLine = numCacheLines / 4;
-    //    offsetWidth = log2(bytesPerLine);
-    //    setWidth = log2(bytesPerLine);
+            }
 
 
 
-    //    sSize = sA.size();
-    //    for (int i = 0; i < sSize; i += 2) {
-    //        get<0>(sA[i]) = i;
-    //        get<0>(sA[i + 1]) = i;
-    //        get<1>(sA[i]) = -1;
-    //        get<1>(sA[i + 1]) = -1;
-    //        get<2>(sA[i]) = 0;
-    //        get<2>(sA[i + 1]) = 0;
-    //    }
+        }
+        result = static_cast<double>(fifoSFourHit) / addressStore.size();
+        fifoSetFourHits.push_back(result);
 
-    //    sAHitNEW = 0;
 
-    //    for (int b = 0; b < addressStore.size(); b++) {
+      //Eight
+        bytesPerLine = numCacheLines / 8;
+        offsetWidth = log2(blockSize);
+        setWidth = log2(bytesPerLine);
+        //cout << setWidth;
 
-    //        string setValue = addressStore[b].substr(addressStore[b].size() - (offsetWidth + setWidth), setWidth);
-    //        string offsetValue = addressStore[b].substr(addressStore[b].size() - offsetWidth);
-    //        double tag = binary_to_decimal(addressStore[b].substr(0, addressStore[b].size() - (offsetWidth + setWidth)));
+        for (int b = 0; b < addressStore.size(); b++) {
 
-    //        double setValueNew = (binary_to_decimal(setValue));
+            string setValue = addressStore[b].substr(addressStore[b].size() - (offsetWidth + setWidth), setWidth);
+            string offsetValue = addressStore[b].substr(addressStore[b].size() - offsetWidth);
+            double tag = binary_to_decimal(addressStore[b].substr(0, addressStore[b].size() - (offsetWidth + setWidth)));
 
-    //        //cout << setValueNew << endl;
-    //        int temporary = 0;
-    //        int full = 1;
+            //cout << tag << setValue << offsetValue << endl;
+            double setValueNew = (binary_to_decimal(setValue));
 
-    //        for (int i = 0; i < sA.size(); i++) {
-    //            if (get<0>(sA[i]) == setValueNew) {
-    //                if (get<1>(sA[i]) == tag) {
-    //                    sAHitNEW++;
-    //                    temporary = 1;
-    //                    full = 0;
-    //                    break;
-    //                }
-    //            }
-    //        }
+            int temporary = 0;
+            int full = 1;
 
+            for (int i = 0; i < setEightFIFO.size(); i++) {
+                if (get<0>(setEightFIFO[i]) == setValueNew) {
+                    if (get<1>(setEightFIFO[i]) == tag) {
+                        fifoSEightHit++;
+                        temporary = 1;
+                        full = 0;
+                        break;
+                    }
+                }
+            }
 
-    //        if (temporary == 0) {
 
+            if (temporary == 0) {
 
-    //            //for (int i = 0; i < sA.size(); i++) {
-    //                /*if (get<0>(sA[i]) == setValueNew) {
-    //                    if (get<1>(fullyAssociativeFIFO[i]) == -1) {
-    //                        get<1>(fullyAssociativeFIFO[i]) = tag;
-    //                        get<2>(fullyAssociativeFIFO[i]) = b;
-    //                        full = 0;
-    //                        break;
-    //                    }
-    //                }*/
-    //            //}
-    //        }
+                for (int i = 0; i < setEightFIFO.size(); i++) {
+                    if (get<0>(setEightFIFO[i]) == setValueNew) {
+                        if (get<1>(setEightFIFO[i]) == -1) {
+                            get<1>(setEightFIFO[i]) = tag;
+                            get<2>(setEightFIFO[i]) = b;
+                            full = 0;
+                            break;
+                        }
+                    }
+                }
+            }
 
 
 
-    //        if (full == 1) {
-    //            //cout << "hello";
-    //            int minimum = INT_MAX;
-    //            int track = 0;
-    //            //for (int i = 0; i < sA.size(); i++) {
-    //                /*if (get<0>(sA[i]) == setValueNew) {
-    //                    if (get<2>(sA[i]) < minimum) {
-    //                        minimum = get<2>(sA[i]);
-    //                        track = i;
-    //                    }
-    //                }*/
+            if (full == 1) {
+                //cout << "hello";
+                int minimum = get<2>(setEightFIFO[0]);
+                int track = 0;
+                for (int i = 0; i < setEightFIFO.size(); i++) {
+                    if (get<0>(setEightFIFO[i]) == setValueNew) {
+                        if (get<2>(setEightFIFO[i]) < minimum) {
+                            minimum = get<2>(setEightFIFO[i]);
+                            track = i;
+                        }
+                    }
 
-    //            //}
+                }
 
-    //            get<1>(sA[track]) = tag;
-    //            get<2>(sA[track]) = b;
+                get<1>(setEightFIFO[track]) = tag;
+                get<2>(setEightFIFO[track]) = b;
 
-    //        }
+            }
 
 
-    //    }
 
-    //    result = static_cast<double>(sAHitNEW) / addressStore.size();
-    //    sAHits.push_back(result);
+        }
+        result = static_cast<double>(fifoSEightHit) / addressStore.size();
+        fifoSetEightHits.push_back(result);
 
+//FIFO Set Associative End
 
-    //    bytesPerLine = numCacheLines / 8;
-    //    offsetWidth = log2(bytesPerLine);
-    //    setWidth = log2(bytesPerLine);
+//LRU Set Associative Start
 
+    //Two
+        bytesPerLine = numCacheLines / 2;
+        offsetWidth = log2(blockSize);
+        setWidth = log2(bytesPerLine);
+        //cout << setWidth;
 
+        for (int b = 0; b < addressStore.size(); b++) {
 
-    //    sSize = sA.size();
-    //    for (int i = 0; i < sSize; i += 2) {
-    //        get<0>(sA[i]) = i;
-    //        get<0>(sA[i + 1]) = i;
-    //        get<1>(sA[i]) = -1;
-    //        get<1>(sA[i + 1]) = -1;
-    //        get<2>(sA[i]) = 0;
-    //        get<2>(sA[i + 1]) = 0;
-    //    }
+            string setValue = addressStore[b].substr(addressStore[b].size() - (offsetWidth + setWidth), setWidth);
+            string offsetValue = addressStore[b].substr(addressStore[b].size() - offsetWidth);
+            double tag = binary_to_decimal(addressStore[b].substr(0, addressStore[b].size() - (offsetWidth + setWidth)));
 
-    //    sAHitNEW = 0;
+            //cout << tag << setValue << offsetValue << endl;
+            double setValueNew = (binary_to_decimal(setValue));
 
-    //    for (int b = 0; b < addressStore.size(); b++) {
+            int temporary = 0;
+            int full = 1;
 
-    //        string setValue = addressStore[b].substr(addressStore[b].size() - (offsetWidth + setWidth), setWidth);
-    //        string offsetValue = addressStore[b].substr(addressStore[b].size() - offsetWidth);
-    //        double tag = binary_to_decimal(addressStore[b].substr(0, addressStore[b].size() - (offsetWidth + setWidth)));
+            for (int i = 0; i < testingCache.size(); i++) {
+                if (get<0>(testingCache[i]) == setValueNew) {
+                    if (get<1>(testingCache[i]) == tag) {
+                        testingNum++;
+                        get<2>(testingCache[i]) = b;
+                        temporary = 1;
+                        full = 0;
+                        break;
+                    }
+                }
+            }
 
-    //        double setValueNew = (binary_to_decimal(setValue));
 
-    //        //cout << setValueNew << endl;
-    //        int temporary = 0;
-    //        int full = 1;
+            if (temporary == 0) {
 
-    //        //for (int i = 0; i < sA.size(); i++) {
-    //            /*if (get<0>(sA[i]) == setValueNew) {
-    //                if (get<1>(sA[i]) == tag) {
-    //                    sAHitNEW++;
-    //                    temporary = 1;
-    //                    full = 0;
-    //                    break;
-    //                }
-    //            }*/
-    //        //}
+                for (int i = 0; i < testingCache.size(); i++) {
+                    if (get<0>(testingCache[i]) == setValueNew) {
+                        if (get<1>(testingCache[i]) == -1) {
+                            get<1>(testingCache[i]) = tag;
+                            get<2>(testingCache[i]) = b;
+                            full = 0;
+                            break;
+                        }
+                    }
+                }
+            }
 
 
-    //        if (temporary == 0) {
 
+            if (full == 1) {
+                //cout << "hello";
+                int minimum = get<2>(testingCache[0]);
+                int track = 0;
+                for (int i = 0; i < testingCache.size(); i++) {
+                    if (get<0>(testingCache[i]) == setValueNew) {
+                        if (get<2>(testingCache[i]) < minimum) {
+                            minimum = get<2>(testingCache[i]);
+                            track = i;
+                        }
+                    }
 
-    //            //for (int i = 0; i < sA.size(); i++) {
-    //                /*if (get<0>(sA[i]) == setValueNew) {
-    //                    if (get<1>(fullyAssociativeFIFO[i]) == -1) {
-    //                        get<1>(fullyAssociativeFIFO[i]) = tag;
-    //                        get<2>(fullyAssociativeFIFO[i]) = b;
-    //                        full = 0;
-    //                        break;
-    //                    }
-    //                }*/
-    //            //}//
-    //        }
+                }
 
+                get<1>(testingCache[track]) = tag;
+                get<2>(testingCache[track]) = b;
 
+            }
 
-    //        if (full == 1) {
-    //            //cout << "hello";
-    //            int minimum = INT_MAX;
-    //            int track = 0;
-    //            for (int i = 0; i < sA.size(); i++) {
-    //                if (get<0>(sA[i]) == setValueNew) {
-    //                    if (get<2>(sA[i]) < minimum) {
-    //                        minimum = get<2>(sA[i]);
-    //                        track = i;
-    //                    }
-    //                }
 
-    //            }
 
-    //            get<1>(sA[track]) = tag;
-    //            get<2>(sA[track]) = b;
+        }
+        result = static_cast<double>(testingNum) / addressStore.size();
+        testing.push_back(result);
 
-    //        }
+    //Four
+        bytesPerLine = numCacheLines / 4;
+        offsetWidth = log2(blockSize);
+        setWidth = log2(bytesPerLine);
+        //cout << setWidth;
 
+        for (int b = 0; b < addressStore.size(); b++) {
 
-    //    }
+            string setValue = addressStore[b].substr(addressStore[b].size() - (offsetWidth + setWidth), setWidth);
+            string offsetValue = addressStore[b].substr(addressStore[b].size() - offsetWidth);
+            double tag = binary_to_decimal(addressStore[b].substr(0, addressStore[b].size() - (offsetWidth + setWidth)));
 
-    //    result = static_cast<double>(sAHitNEW) / addressStore.size();
-    //    sAHits.push_back(result);
+            //cout << tag << setValue << offsetValue << endl;
+            double setValueNew = (binary_to_decimal(setValue));
+
+            int temporary = 0;
+            int full = 1;
+
+            for (int i = 0; i < setFourLRU.size(); i++) {
+                if (get<0>(setFourLRU[i]) == setValueNew) {
+                    if (get<1>(setFourLRU[i]) == tag) {
+                        lruSFourHit++;
+                        get<2>(setFourLRU[i]) = b;
+                        temporary = 1;
+                        full = 0;
+                        break;
+                    }
+                }
+            }
+
+
+            if (temporary == 0) {
+
+                for (int i = 0; i < setFourLRU.size(); i++) {
+                    if (get<0>(setFourLRU[i]) == setValueNew) {
+                        if (get<1>(setFourLRU[i]) == -1) {
+                            get<1>(setFourLRU[i]) = tag;
+                            get<2>(setFourLRU[i]) = b;
+                            full = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+
+            if (full == 1) {
+                //cout << "hello";
+                int minimum = get<2>(setFourLRU[0]);
+                int track = 0;
+                for (int i = 0; i < setFourLRU.size(); i++) {
+                    if (get<0>(setFourLRU[i]) == setValueNew) {
+                        if (get<2>(setFourLRU[i]) < minimum) {
+                            minimum = get<2>(setFourLRU[i]);
+                            track = i;
+                        }
+                    }
+
+                }
+
+                get<1>(setFourLRU[track]) = tag;
+                get<2>(setFourLRU[track]) = b;
+
+            }
+
+
+
+        }
+        result = static_cast<double>(lruSFourHit) / addressStore.size();
+        lruSetFourHits.push_back(result);
+
+
+    //Eight
+        bytesPerLine = numCacheLines / 8;
+        offsetWidth = log2(blockSize);
+        setWidth = log2(bytesPerLine);
+        //cout << setWidth;
+
+        for (int b = 0; b < addressStore.size(); b++) {
+
+            string setValue = addressStore[b].substr(addressStore[b].size() - (offsetWidth + setWidth), setWidth);
+            string offsetValue = addressStore[b].substr(addressStore[b].size() - offsetWidth);
+            double tag = binary_to_decimal(addressStore[b].substr(0, addressStore[b].size() - (offsetWidth + setWidth)));
+
+            //cout << tag << setValue << offsetValue << endl;
+            double setValueNew = (binary_to_decimal(setValue));
+
+            int temporary = 0;
+            int full = 1;
+
+            for (int i = 0; i < setEightLRU.size(); i++) {
+                if (get<0>(setEightLRU[i]) == setValueNew) {
+                    if (get<1>(setEightLRU[i]) == tag) {
+                        lruSEightHit++;
+                        get<2>(setEightLRU[i]) = b;
+                        temporary = 1;
+                        full = 0;
+                        break;
+                    }
+                }
+            }
+
+
+            if (temporary == 0) {
+
+                for (int i = 0; i < setEightLRU.size(); i++) {
+                    if (get<0>(setEightLRU[i]) == setValueNew) {
+                        if (get<1>(setEightLRU[i]) == -1) {
+                            get<1>(setEightLRU[i]) = tag;
+                            get<2>(setEightLRU[i]) = b;
+                            full = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+
+            if (full == 1) {
+                //cout << "hello";
+                int minimum = get<2>(setEightLRU[0]);
+                int track = 0;
+                for (int i = 0; i < setEightLRU.size(); i++) {
+                    if (get<0>(setEightLRU[i]) == setValueNew) {
+                        if (get<2>(setEightLRU[i]) < minimum) {
+                            minimum = get<2>(setEightLRU[i]);
+                            track = i;
+                        }
+                    }
+
+                }
+
+                get<1>(setEightLRU[track]) = tag;
+                get<2>(setEightLRU[track]) = b;
+
+            }
+
+
+
+        }
+        result = static_cast<double>(lruSEightHit) / addressStore.size();
+        lruSetEightHits.push_back(result);
+
+
+//LRU Set Associative End
 
     }
 
-    vector<double> test = { 0.884788, 0.91493, 0.963724, 0.982295, 0.988266 };
+    /*vector<double> test = { 0.884788, 0.91493, 0.963724, 0.982295, 0.988266 };
     vector<double> test1 = { 0.891342, 0.921929, 0.967918, 0.9394, 0.989222};
     vector<double> test2  = { 0.909824, 0.945048, 0.966691, 0.985592, 0.989534 };
     vector<double> test3 = { 0.92069, 0.952676, 0.973323, 0.988014, 0.990876 };
     vector<double> test4 = { 0.910951, 0.954943, 0.76895, 0.986156, 0.989895 };
-    vector<double> test5 = { 0.92531, 0.962731, 0.98178, 0.988941, 0.991264 };
+    vector<double> test5 = { 0.92531, 0.962731, 0.98178, 0.988941, 0.991264 };*/
 
-    cout << "Direct Map: [";
+    cout << "Direct Map: [ ";
     for (int z = 0; z < directHits.size(); z++) {
         std::cout << std::fixed;
         std::cout << std::setprecision(6);
         cout << directHits[z] << " ";
     }
     cout << "]" << endl;
-
-    cout << "FIFO Fully Associative: [";
+    cout << "FIFO Fully Associative: [ ";
     for (int z = 0; z < fifoFullyHits.size(); z++) {
         std::cout << std::fixed;
         std::cout << std::setprecision(6);
         cout << fifoFullyHits[z] << " ";
     }
     cout << "]" << endl;
-
-    cout << "LRU Fully Associative: [";
+    cout << "LRU Fully Associative: [ ";
     for (int z = 0; z < lruFullyHits.size(); z++) {
         std::cout << std::fixed;
         std::cout << std::setprecision(6);
         cout << lruFullyHits[z] << " ";
     }
     cout << "]" << endl;
-    cout << "FIFO SA Associative 2way: [";
-    for (int z = 0; z < test.size(); z++) {
+    cout << "FIFO SA Associative 2way: [ ";
+    for (int z = 0; z < fifoSetTwoHits.size(); z++) {
         std::cout << std::fixed;
         std::cout << std::setprecision(6);
-        cout << test[z] << " ";
+        cout << fifoSetTwoHits[z] << " ";
     }
     cout << "]" << endl;
-    cout << "LRU SA Associative 2way: [";
-    for (int z = 0; z < test1.size(); z++) {
+    cout << "LRU SA Associative 2way: [ ";
+    for (int z = 0; z < testing.size(); z++) {
         std::cout << std::fixed;
         std::cout << std::setprecision(6);
-        cout << test1[z] << " ";
+        cout << testing[z] << " ";
     }
     cout << "]" << endl;
-    cout << "FIFO SA Associative 4way: [";
-    for (int z = 0; z < test2.size(); z++) {
+    cout << "FIFO SA Associative 4way: [ ";
+    for (int z = 0; z < fifoSetFourHits.size(); z++) {
         std::cout << std::fixed;
         std::cout << std::setprecision(6);
-        cout << test2[z] << " ";
+        cout << fifoSetFourHits[z] << " ";
     }
     cout << "]" << endl;
-    cout << "LRU SA Associative 4way: [";
-    for (int z = 0; z < test3.size(); z++) {
+    cout << "LRU SA Associative 4way: [ ";
+    for (int z = 0; z < lruSetFourHits.size(); z++) {
         std::cout << std::fixed;
         std::cout << std::setprecision(6);
-        cout << test3[z] << " ";
+        cout << lruSetFourHits[z] << " ";
     }
     cout << "]" << endl;
-    cout << "FIFO SA Associative 8way: [";
-    for (int z = 0; z < test4.size(); z++) {
+    cout << "FIFO SA Associative 8way: [ ";
+    for (int z = 0; z < fifoSetEightHits.size(); z++) {
         std::cout << std::fixed;
         std::cout << std::setprecision(6);
-        cout << test4[z] << " ";
+        cout << fifoSetEightHits[z] << " ";
     }
     cout << "]" << endl;
-
-    cout << "LRU SA Associative 8way: [";
-    for (int z = 0; z < test5.size(); z++) {
+    cout << "LRU SA Associative 8way: [ ";
+    for (int z = 0; z < lruSetEightHits.size(); z++) {
         std::cout << std::fixed;
         std::cout << std::setprecision(6);
-        cout << test5[z] << " ";
+        cout << lruSetEightHits[z] << " ";
     }
     cout << "]" << endl;
 
